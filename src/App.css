@@ -1,0 +1,3 @@
+.selected {
+  @apply text-black font-semibold;
+}

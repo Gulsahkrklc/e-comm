@@ -1,4 +1,5 @@
 import PageContent from "../layout/PageContent";
+
 function ShopPage() {
     return (
         <div>
