@@ -1,8 +1,9 @@
-
 import React, { useState } from "react";
+import LoginForm from "../components/LoginForm";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-md">
@@ -34,6 +35,12 @@ const Header = () => {
           <a href="#" className="text-gray-700 hover:text-blue-500">
             🛒
           </a>
+          <button
+            className="text-gray-700 hover:text-blue-500"
+            onClick={() => setLoginOpen(!loginOpen)}
+          >
+            Login
+          </button>
 
           {/* Mobile Menu Toggle Button */}
           <button
@@ -78,8 +85,22 @@ const Header = () => {
           </a>
         </nav>
       </div>
+
+      {/* Login Form Modal */}
+      {loginOpen && (
+        <div className="absolute top-16 right-6 bg-white border shadow-lg p-4 z-50">
+          <LoginForm />
+          <button
+            onClick={() => setLoginOpen(false)}
+            className="text-gray-500 hover:text-red-500 mt-2"
+          >
+            Close
+          </button>
+        </div>
+      )}
     </header>
   );
 };
 
 export default Header;
+
