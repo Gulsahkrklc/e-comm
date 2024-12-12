@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LoginForm from "../components/LoginForm";
+import SignupForm from "../components/SignupForm";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -89,7 +89,7 @@ const Header = () => {
       {/* Login Form Modal */}
       {loginOpen && (
         <div className="absolute top-16 right-6 bg-white border shadow-lg p-4 z-50">
-          <LoginForm />
+          <SignupForm />
           <button
             onClick={() => setLoginOpen(false)}
             className="text-gray-500 hover:text-red-500 mt-2"
