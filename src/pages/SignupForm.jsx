@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import PageContent from '../layout/PageContent';
 
 // Create Axios instance
 const api = axios.create({
@@ -65,6 +66,7 @@ const SignupForm = () => {
   };
 
   return (
+    <PageContent>
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {/* Name Field */}
       <div>
@@ -226,6 +228,7 @@ const SignupForm = () => {
               <span className="text-red-500">Valid IBAN is required</span>
             )}
           </div>
+
         </>
       )}
 
@@ -241,8 +244,11 @@ const SignupForm = () => {
         {isSubmitting ? "Submitting..." : "Sign Up"}
       </button>
     </form>
+    </PageContent>
   );
 };
 
-export default SignupForm;
+export default SignupForm
+
+
 

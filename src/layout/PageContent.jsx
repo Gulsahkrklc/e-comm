@@ -1,6 +1,8 @@
 import Footer from "./Footer";
 import Header from "./Header";
+
 function PageContent({children}) {
+
     return (
         <div>
             <Header />
@@ -9,4 +11,5 @@ function PageContent({children}) {
         </div>
     )
 }
+
 export default PageContent;
