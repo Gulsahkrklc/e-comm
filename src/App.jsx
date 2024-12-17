@@ -1,20 +1,53 @@
-import { Switch, Route } from 'react-router-dom'
-import './App.css'
-import "./index.css"
-import HomePage from "./pages/HomePage"
-import ShopPage from './pages/ShopPage'
-import SignupForm from './pages/SignupForm'
-import LoginForm from './pages/LoginForm'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
-import { Provider } from 'react-redux'
-import store from "./redux/store"
+import { Switch, Route } from "react-router-dom";
+import "./App.css";
+import "./index.css";
+import HomePage from "./pages/HomePage";
+import ShopPage from "./pages/ShopPage";
+import SignupForm from "./pages/SignupForm";
+import LoginForm from "./pages/LoginForm";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setUser } from "./redux/userActions"; // Düzeltilmiş yol
+import axios from "axios";
+
+const axiosInstance = axios.create({
+  baseURL: "https://workintech-fe-ecommerce.onrender.com",
+});
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    axiosInstance.defaults.headers.common["Authorization"] = token;
+
+    const verifyToken = async () => {
+      try {
+        const response = await axiosInstance.get("/verify");
+        const userData = response.data;
+
+        dispatch(setUser(userData));
+
+        if (userData.token) {
+          localStorage.setItem("token", userData.token);
+          axiosInstance.defaults.headers.common["Authorization"] = userData.token;
+        }
+      } catch (error) {
+        console.error("Token verification failed:", error);
+        localStorage.removeItem("token");
+        delete axiosInstance.defaults.headers.common["Authorization"];
+      }
+    };
+
+    verifyToken();
+  }, [dispatch]);
 
   return (
     <div>
-      <Provider store={store}>
       <Switch>
         <Route path="/" exact>
           <HomePage />
@@ -30,9 +63,8 @@ function App() {
         </Route>
       </Switch>
       <ToastContainer />
-      </Provider>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
