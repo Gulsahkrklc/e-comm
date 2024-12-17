@@ -1,228 +1,209 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { useHistory, Link } from 'react-router-dom';
-import PageContent from '../layout/PageContent';
-import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { setRoles } from '../redux/actions/clientActions';
+import React, { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
+import { useHistory, Link } from "react-router-dom";
+import PageContent from "../layout/PageContent";
 
-const axiosInstance = axios.create({
-  baseURL: 'https://workintech-fe-ecommerce.onrender.com',
+const api = axios.create({
+  baseURL: "https://workintech-fe-ecommerce.onrender.com",
 });
 
 const SignupForm = () => {
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
     defaultValues: {
-      role_id: "3"
-    }
+      role_id: "3", // Default: Customer
+    },
   });
 
-  const roles = useSelector(state => state.client.roles);
-  const dispatch = useDispatch();
-
-  const [storeFieldsVisible, setStoreFieldsVisible] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [error, setError] = useState(null);
   const history = useHistory();
+  const selectedRole = watch("role_id");
 
+  // Fetch roles from API
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await axiosInstance.get('/roles');
-        dispatch(setRoles(response.data));
+        const response = await api.get("/roles");
+        setRoles(response.data);
       } catch (error) {
-        console.error('Error fetching roles:', error);
+        console.error("Error fetching roles:", error);
       }
     };
-    if (roles.length === 0) {
-      fetchRoles();
-    }
-  }, [dispatch, roles.length]);
+    fetchRoles();
+  }, []);
 
+  // Handle form submission
   const onSubmit = async (data) => {
     try {
-      const { role_id } = data;
-      let postData = {
+      const formData = {
         name: data.name,
         email: data.email,
         password: data.password,
-        role_id,
+        role_id: data.role_id,
       };
 
-      if (role_id === 'store') {
-        postData.store = {
+      // Add store-specific fields if role is "Store" (role_id === "2")
+      if (data.role_id === "2") {
+        formData.store = {
           name: data.storeName,
           phone: data.storePhone,
-          tax_no: data.storeTaxNo,
+          tax_no: data.storeTaxId,
           bank_account: data.storeBankAccount,
         };
       }
 
-      await axiosInstance.post('/signup', postData);
-      toast.success('You need to click link in email to activate your account!');
-      history.push("/login");
+      await api.post("/signup", formData);
+      alert("You need to click the link in your email to activate your account!");
+      history.goBack(); // Redirect to the previous page
     } catch (error) {
-      console.error('Error during signup:', error);
-      toast.error('Signup failed. Please try again.');
+      setError(error.response?.data?.message || "An error occurred during signup");
     }
-  };
-
-  const handleRoleChange = (event) => {
-    const selectedRoleId = event.target.value;
-    const selectedRole = roles.find(role => role.id === parseInt(selectedRoleId, 10));
-    setStoreFieldsVisible(selectedRole && selectedRole.code === 'store');
   };
 
   return (
     <PageContent>
-      <div className="flex font-monts items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: `url('/images/signup-img.jpg')` }}>
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white w-full max-w-md p-6 rounded shadow-md">
+      <div
+        className="flex items-center justify-center min-h-screen bg-cover p-4"
+        style={{ backgroundImage: `url('/images/signup.jpeg')` }}
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 bg-white p-6 rounded shadow-md w-full max-w-md"
+        >
           <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Name *</label>
+          {/* Name */}
+          <div>
+            <label className="block font-semibold mb-1">Name *</label>
             <input
-              {...register('name', { required: true, minLength: 3 })}
-              className={`border p-2 w-full rounded ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+              {...register("name", { required: true, minLength: 3 })}
+              className={`border p-2 w-full rounded ${errors.name ? "border-red-500" : "border-gray-300"}`}
               placeholder="Full Name"
             />
-            {errors.name && <span className="text-red-500 text-sm">Name is required and must be at least 3 characters.</span>}
+            {errors.name && <span className="text-red-500">Name is required (min 3 characters)</span>}
           </div>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Email *</label>
+          {/* Email */}
+          <div>
+            <label className="block font-semibold mb-1">Email *</label>
             <input
-              {...register('email', { required: true, pattern: /^\S+@\S+$/i })}
-              className={`border p-2 w-full rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+              type="email"
+              {...register("email", {
+                required: true,
+                pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              })}
+              className={`border p-2 w-full rounded ${errors.email ? "border-red-500" : "border-gray-300"}`}
               placeholder="example@gmail.com"
             />
-            {errors.email && <span className="text-red-500 text-sm">Email is required and must be valid.</span>}
+            {errors.email && <span className="text-red-500">Valid email is required</span>}
           </div>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Password *</label>
+          {/* Password */}
+          <div>
+            <label className="block font-semibold mb-1">Password *</label>
             <input
               type="password"
-              {...register('password', {
+              {...register("password", {
                 required: true,
                 minLength: 8,
-                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+                pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/,
               })}
-              className={`border p-2 w-full rounded ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+              className={`border p-2 w-full rounded ${errors.password ? "border-red-500" : "border-gray-300"}`}
               placeholder="Password"
             />
             {errors.password && (
-              <span className="text-red-500 text-sm">
-                Password must be at least 8 characters, including numbers, upper and lower case letters, and special characters.
+              <span className="text-red-500">
+                Password must be at least 8 characters, including uppercase, lowercase, number, and special character
               </span>
             )}
           </div>
 
-          <div className="mb-4">
-            <label className="block mb-2 font-semibold">Confirm Password *</label>
-            <input
-              type="password"
-              {...register('confirmPassword', {
-                validate: value => value === watch('password') || "Passwords don't match"
-              })}
-              className={`border p-2 w-full rounded ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
-              placeholder="Confirm Password"
+          {/* Role Selection */}
+          <div>
+            <label className="block font-semibold mb-1">Role *</label>
+            <Controller
+              name="role_id"
+              control={control}
+              render={({ field }) => (
+                <select {...field} className="w-full px-3 py-2 border rounded">
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             />
-            {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword.message}</span>}
           </div>
 
-          {roles.length > 0 && (
-            <div className="mb-4">
-              <label className="block mb-2 font-semibold">Role *</label>
-              <select
-                {...register('role_id', { required: true })}
-                onChange={handleRoleChange}
-                className={`border p-2 w-full rounded ${errors.role_id ? 'border-red-500' : 'border-gray-300'}`}
-              >
-                {roles.map(role => (
-                  <option key={role.id} value={role.id}>{role.name}</option>
-                ))}
-              </select>
-              {errors.role_id && <span className="text-red-500 text-sm">Role is required.</span>}
-            </div>
-          )}
-
-          {storeFieldsVisible && (
+          {/* Store-Specific Fields */}
+          {selectedRole === "2" && (
             <>
-              <div className="mb-4">
-                <label className="block mb-2 font-semibold">Store Name *</label>
+              <div>
+                <label className="block font-semibold mb-1">Store Name *</label>
                 <input
-                  {...register('storeName', { required: true, minLength: 3 })}
-                  className={`border p-2 w-full rounded ${errors.storeName ? 'border-red-500' : 'border-gray-300'}`}
+                  {...register("storeName", { required: true, minLength: 3 })}
+                  className="w-full px-3 py-2 border rounded"
                   placeholder="Store Name"
                 />
-                {errors.storeName && <span className="text-red-500 text-sm">Store Name is required and must be at least 3 characters.</span>}
               </div>
-
-              <div className="mb-4">
-                <label className="block mb-2 font-semibold">Store Phone *</label>
+              <div>
+                <label className="block font-semibold mb-1">Store Phone *</label>
                 <input
-                  {...register('storePhone', { required: true, pattern: /^(\+90|0)?5\d{2}\d{7}$/ })}
-                  className={`border p-2 w-full rounded ${errors.storePhone ? 'border-red-500' : 'border-gray-300'}`}
-                  placeholder="+90xxxxxxxxxx"
+                  {...register("storePhone", {
+                    required: true,
+                    pattern: /^(\+90|0)?[1-9][0-9]{9}$/,
+                  })}
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="Store Phone"
                 />
-                {errors.storePhone && <span className="text-red-500 text-sm">Store Phone is required and must be a valid Türkiye phone number.</span>}
               </div>
-
-              <div className="mb-4">
-                <label className="block mb-2 font-semibold">Store Tax ID *</label>
+              <div>
+                <label className="block font-semibold mb-1">Store Tax ID *</label>
                 <input
-                  {...register('storeTaxNo', { required: true, pattern: /^T\d{4}V\d{6}$/ })}
-                  className={`border p-2 w-full rounded ${errors.storeTaxNo ? 'border-red-500' : 'border-gray-300'}`}
-                  placeholder="TXXXXVXXXXXX"
+                  {...register("storeTaxId", { required: true, pattern: /^T\d{3}V\d{6}$/ })}
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="TXXXVXXXXXX"
                 />
-                {errors.storeTaxNo && <span className="text-red-500 text-sm">Store Tax ID is required and must match the pattern "TXXXXVXXXXXX".</span>}
               </div>
-
-              <div className="mb-4">
-                <label className="block mb-2 font-semibold">Store Bank Account *</label>
+              <div>
+                <label className="block font-semibold mb-1">Store Bank Account *</label>
                 <input
-                  {...register('storeBankAccount', { required: true, pattern: /^TR\d{2}[0-9]{5}[0-9]{1,16}$/ })}
-                  className={`border p-2 w-full rounded ${errors.storeBankAccount ? 'border-red-500' : 'border-gray-300'}`}
-                  placeholder="TRxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  {...register("storeBankAccount", {
+                    required: true,
+                    pattern: /^TR\d{2}[0-9A-Z]{5}[0-9A-Z]{17}$/,
+                  })}
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="TRXXXXXXXXXXXXXXXXXXXXXX"
                 />
-                {errors.storeBankAccount && <span className="text-red-500 text-sm">Store Bank Account is required and must be a valid IBAN.</span>}
               </div>
             </>
           )}
 
+          {/* Error Message */}
+          {error && <div className="text-red-500">{error}</div>}
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-6 bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-600 transition disabled:opacity-50 flex items-center justify-center"
+            className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 disabled:bg-blue-300"
           >
-            {isSubmitting && (
-              <svg
-                className="animate-spin h-5 w-5 mr-3 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-            )}
-            {isSubmitting ? 'Submitting...' : 'Sign Up'}
+            {isSubmitting ? "Submitting..." : "Sign Up"}
           </button>
-
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Already registered? <Link to="/login" className="text-blue-500 hover:text-blue-600 font-semibold">Log In</Link>
+          <div className="text-center mt-4">
+            <p>
+              Already registered?{" "}
+              <Link to="/login" className="text-blue-500 font-semibold">
+                Log In
+              </Link>
             </p>
           </div>
         </form>
