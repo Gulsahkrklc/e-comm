@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import { useHistory, Link} from 'react-router-dom'; // useHistory import edildi
-import { toast} from 'react-toastify';
-import { login } from '../redux/userActions';
+import { useHistory, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import PageContent from '../layout/PageContent';
 
 const LoginForm = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
-  const [rememberMe, setRememberMe] = useState(false);
-  const history = useHistory(); 
-  
+  const history = useHistory();
   const dispatch = useDispatch();
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(login(data.email, data.password, rememberMe));
-      const response = await axiosInstance.post('/login', postData);
+      const response = await axios.post('https://workintech-fe-ecommerce.onrender.com/login', {
+        email: data.email,
+        password: data.password
+      });
 
-      const userData = response.data;
-      dispatch(setUser(userData));
-
-      if (data.rememberMe && userData.token) {
-        localStorage.setItem('token', userData.token);
+      if (response.data.token) {
+        if (data.rememberMe) {
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify(response.data));
+        }
+        dispatch({ type: 'SET_USER', payload: response.data });
+        
+        toast.success('Login successful!');
+        history.push("/");
       }
-
-      toast.success('Login successful!');
-      history.push("/");
-      //history.goBack(); // Önceki sayfaya yönlendirme
     } catch (error) {
-      toast.error(error.message || "Login failed. Please try again");
+      toast.error(error.response?.data?.message || "Login failed. Please try again");
     }
   };
 
@@ -64,7 +64,6 @@ const LoginForm = () => {
           type="checkbox"
           id="rememberMe"
           {...register('rememberMe')}
-          onChange={(e) => setRememberMe(e.target.checked)}
           className="mr-2"
         />
         <label htmlFor="rememberMe">Remember Me</label>
