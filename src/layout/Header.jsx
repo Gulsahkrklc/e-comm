@@ -92,9 +92,11 @@ function Header() {
             {isMobileMenuOpen && (
                 <div className="flex flex-col items-center space-y-6 my-16 text-[30px] text-gray-500 lg:hidden">
                     <NavLink exact to="/" activeClassName="selected" className="hover:text-black">Home</NavLink>
-                    <NavLink to="/shop" activeClassName="selected" className="hover:text-black">Product</NavLink>
+                    <NavLink to="/shop" activeClassName="selected" className="hover:text-black">Shop</NavLink>
                     <NavLink to="/pricing" activeClassName="selected" className="hover:text-black">Pricing</NavLink>
                     <NavLink to="/contact" activeClassName="selected" className="hover:text-black">Contact</NavLink>
+                    <NavLink to="/product" activeClassName="selected" className="hover:text-black">Product</NavLink>
+                    
                 </div>
             )}
             {isLoginOpen && (
