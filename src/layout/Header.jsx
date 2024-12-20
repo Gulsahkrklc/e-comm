@@ -39,6 +39,7 @@ function Header() {
                         <NavLink to="/blog" activeClassName="selected" className="hover:text-black">Blog</NavLink>
                         <NavLink to="/contact" activeClassName="selected" className="hover:text-black">Contact</NavLink>
                         <NavLink to="/pages" activeClassName="selected" className="hover:text-black">Pages</NavLink>
+                        <NavLink to="/product" activeClassName="selected" className="hover:text-black">Product</NavLink>
                     </ul>
                     
                 </nav>

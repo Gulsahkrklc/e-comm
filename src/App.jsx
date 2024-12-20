@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userActions"; // Düzeltilmiş yol
 import axios from "axios";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 const axiosInstance = axios.create({
   baseURL: "https://workintech-fe-ecommerce.onrender.com",
@@ -60,6 +61,9 @@ function App() {
         </Route>
         <Route path="/login">
           <LoginForm />
+        </Route>
+        <Route path="/product">
+          <ProductDetailPage />
         </Route>
       </Switch>
       <ToastContainer />
