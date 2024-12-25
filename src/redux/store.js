@@ -5,11 +5,13 @@ import logger from 'redux-logger';
 import clientReducer from './reducers/clientReducer';
 import productReducer from './reducers/productReducer';
 import shoppingCartReducer from './reducers/shoppingCartReducer';
+import categoryReducer from './reducers/categoryReducer';
 
 const rootReducer = combineReducers({
   client: clientReducer,
   product: productReducer,
   shoppingCart: shoppingCartReducer,
+  categories: categoryReducer,
 });
 
 const store = createStore(
