@@ -56,6 +56,9 @@ function App() {
         <Route path="/shop">
           <ShopPage />
         </Route>
+        <Route path="shop/:gender/:categoryName/:categoryId" element={<ShopPage />}>
+          <ShopPage />
+        </Route>
         <Route path="/signup">
           <SignupForm />
         </Route>

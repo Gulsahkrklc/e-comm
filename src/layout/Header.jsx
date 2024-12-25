@@ -7,6 +7,7 @@ import Gravatar from 'react-gravatar';
 function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
     const history = useHistory();
 
     const user = useSelector((state) => state.client.user);
@@ -23,6 +24,10 @@ function Header() {
         setIsLoginOpen(!isLoginOpen);
     };
 
+    const toggleShopMenu = () => {
+        setIsShopMenuOpen(!isShopMenuOpen);
+    };
+
     const categories = {
         kadin: ['Bags', 'Belts', 'Cosmetics', 'Bags', 'Hats'],
         erkek: ['Bags', 'Belts', 'Cosmetics', 'Bags', 'Hats']
@@ -37,47 +42,58 @@ function Header() {
                 <nav className="hidden lg:flex justify-between items-center px-[30px] font-semibold relative">
                     <ul className="flex gap-8 text-gray-500">
                         <NavLink exact to="/" activeClassName="selected" className="hover:text-black">Home</NavLink>
-                        <div className="relative group">
-                            <button className="hover:text-black flex items-center gap-1 py-2">
+                        <div className="relative">
+                            <button 
+                                onClick={toggleShopMenu}
+                                onMouseEnter={() => setIsShopMenuOpen(true)}
+                                className="hover:text-black flex items-center gap-1 py-2"
+                            >
                                 Shop
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className={`w-4 h-4 transition-transform ${isShopMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div className="absolute hidden group-hover:block top-full left-0 mt-1 w-[400px] bg-white border rounded-lg shadow-lg z-50">
-                                <div className="p-6 grid grid-cols-2 gap-8">
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-4 text-gray-800">Kadın</h3>
-                                        <ul className="space-y-3">
-                                            {categories.kadin.map((category, index) => (
-                                                <li key={index}>
-                                                    <Link
-                                                        to={`/shop/kadin/${category.toLowerCase()}`}
-                                                        className="text-gray-600 hover:text-black"
-                                                    >
-                                                        {category}
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-4 text-gray-800">Erkek</h3>
-                                        <ul className="space-y-3">
-                                            {categories.erkek.map((category, index) => (
-                                                <li key={index}>
-                                                    <Link
-                                                        to={`/shop/erkek/${category.toLowerCase()}`}
-                                                        className="text-gray-600 hover:text-black"
-                                                    >
-                                                        {category}
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        </ul>
+                            {isShopMenuOpen && (
+                                <div 
+                                    className="absolute top-full left-0 mt-1 w-[400px] bg-white border rounded-lg shadow-lg z-50"
+                                    onMouseLeave={() => setIsShopMenuOpen(false)}
+                                >
+                                    <div className="p-6 grid grid-cols-2 gap-8">
+                                        <div>
+                                            <h3 className="font-bold text-lg mb-4 text-gray-800">Kadın</h3>
+                                            <ul className="space-y-3">
+                                                {categories.kadin.map((category, index) => (
+                                                    <li key={index}>
+                                                        <Link
+                                                            to={`/shop/kadin/${category.toLowerCase()}`}
+                                                            className="text-gray-600 hover:text-black block py-1"
+                                                            onClick={() => setIsShopMenuOpen(false)}
+                                                        >
+                                                            {category}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-lg mb-4 text-gray-800">Erkek</h3>
+                                            <ul className="space-y-3">
+                                                {categories.erkek.map((category, index) => (
+                                                    <li key={index}>
+                                                        <Link
+                                                            to={`/shop/erkek/${category.toLowerCase()}`}
+                                                            className="text-gray-600 hover:text-black block py-1"
+                                                            onClick={() => setIsShopMenuOpen(false)}
+                                                        >
+                                                            {category}
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                         <NavLink to="/about" activeClassName="selected" className="hover:text-black">About</NavLink>
                         <NavLink to="/blog" activeClassName="selected" className="hover:text-black">Blog</NavLink>

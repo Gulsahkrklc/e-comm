@@ -76,7 +76,7 @@ const ShopPage = () => {
                 <img
                   src={category.img}
                   alt={category.title}
-                  className="w-full h-40 object-top object-cover"
+                  className="w-full h-48 object-contain"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                   <p className="text-white text-xl font-semibold text-center">
@@ -101,7 +101,7 @@ const ShopPage = () => {
                 <img
                   src={category.img}
                   alt={category.title}
-                  className="w-full h-40 object-cover rounded-t-lg"
+                  className="w-full h-48 object-contain rounded-t-lg"
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold">{category.title}</h3>
