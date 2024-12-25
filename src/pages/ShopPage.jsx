@@ -91,33 +91,21 @@ const ShopPage = () => {
         {/* All Categories */}
         <div className="container mx-auto px-4 py-8">
           <h3 className="text-2xl font-bold mb-4">All Categories</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             {paginatedCategories.map((category) => (
               <Link
                 key={category.id}
                 to={`/shop/${category.gender}/${category.title.toLowerCase()}/${category.id}`}
-                className="group flex flex-col items-center text-center bg-white"
+                className="border rounded-lg shadow-md hover:shadow-lg transition duration-300"
               >
-                <div className="overflow-hidden w-full">
-                  <img
-                    src={category.img}
-                    alt={category.title}
-                    className="w-full h-[300px] object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                </div>
-                <div className="py-4 transition-colors duration-300 group-hover:text-gray-500">
-                  <h3 className="text-base font-semibold mb-1">{category.title}</h3>
-                  <p className="text-sm text-gray-500 mb-2">English Department</p>
-                  <div className="flex justify-center items-center mt-2 space-x-2">
-                    <span className="text-sm text-gray-500 line-through">${category.rating}</span>
-                    <span className="text-sm text-green-600 font-semibold">$6.48</span>
-                  </div>
-                  <div className="flex justify-center space-x-2 mt-2">
-                    <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                    <span className="w-3 h-3 rounded-full bg-orange-500"></span>
-                    <span className="w-3 h-3 rounded-full bg-black"></span>
-                  </div>
+                <img
+                  src={category.img}
+                  alt={category.title}
+                  className="w-full h-40 object-cover rounded-t-lg"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">{category.title}</h3>
+                  <p className="text-sm text-gray-500">Rating: {category.rating}</p>
                 </div>
               </Link>
             ))}
@@ -125,36 +113,27 @@ const ShopPage = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center mt-8 mb-8">
+        <div className="flex justify-center items-center mt-8 space-x-2">
           <button
             onClick={() => setCurrentPage(1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 text-gray-500 hover:text-blue-500"
+            className={`px-4 py-2 border ${currentPage === 1 ? "bg-gray-200 text-gray-500" : "bg-white text-black"} rounded-l-lg`}
           >
             First
           </button>
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 text-gray-500 hover:text-blue-500"
-          >
-            1
-          </button>
-          <button
-            onClick={() => setCurrentPage(currentPage)}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            2
-          </button>
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            className="px-4 py-2 text-gray-500 hover:text-blue-500"
-          >
-            3
-          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-4 py-2 border ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-white text-black"} hover:bg-blue-100`}
+            >
+              {index + 1}
+            </button>
+          ))}
           <button
             onClick={() => setCurrentPage(totalPages)}
-            className="px-4 py-2 text-gray-500 hover:text-blue-500"
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 border ${currentPage === totalPages ? "bg-gray-200 text-gray-500" : "bg-white text-black"} rounded-r-lg`}
           >
             Next
           </button>

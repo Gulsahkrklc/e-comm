@@ -6,7 +6,6 @@ import Gravatar from 'react-gravatar';
 
 function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const history = useHistory();
 
@@ -20,9 +19,13 @@ function Header() {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
-    
     const toggleLoginMenu = () => {
         setIsLoginOpen(!isLoginOpen);
+    };
+
+    const categories = {
+        kadin: ['Bags', 'Belts', 'Cosmetics', 'Bags', 'Hats'],
+        erkek: ['Bags', 'Belts', 'Cosmetics', 'Bags', 'Hats']
     };
 
     return (
@@ -34,14 +37,54 @@ function Header() {
                 <nav className="hidden lg:flex justify-between items-center px-[30px] font-semibold relative">
                     <ul className="flex gap-8 text-gray-500">
                         <NavLink exact to="/" activeClassName="selected" className="hover:text-black">Home</NavLink>
-                        <NavLink to="/shop" activeClassName="selected" className="hover:text-black">Shop</NavLink>
+                        <div className="relative group">
+                            <button className="hover:text-black flex items-center gap-1 py-2">
+                                Shop
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div className="absolute hidden group-hover:block top-full left-0 mt-1 w-[400px] bg-white border rounded-lg shadow-lg z-50">
+                                <div className="p-6 grid grid-cols-2 gap-8">
+                                    <div>
+                                        <h3 className="font-bold text-lg mb-4 text-gray-800">Kadın</h3>
+                                        <ul className="space-y-3">
+                                            {categories.kadin.map((category, index) => (
+                                                <li key={index}>
+                                                    <Link
+                                                        to={`/shop/kadin/${category.toLowerCase()}`}
+                                                        className="text-gray-600 hover:text-black"
+                                                    >
+                                                        {category}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-lg mb-4 text-gray-800">Erkek</h3>
+                                        <ul className="space-y-3">
+                                            {categories.erkek.map((category, index) => (
+                                                <li key={index}>
+                                                    <Link
+                                                        to={`/shop/erkek/${category.toLowerCase()}`}
+                                                        className="text-gray-600 hover:text-black"
+                                                    >
+                                                        {category}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <NavLink to="/about" activeClassName="selected" className="hover:text-black">About</NavLink>
                         <NavLink to="/blog" activeClassName="selected" className="hover:text-black">Blog</NavLink>
                         <NavLink to="/contact" activeClassName="selected" className="hover:text-black">Contact</NavLink>
                         <NavLink to="/pages" activeClassName="selected" className="hover:text-black">Pages</NavLink>
                         <NavLink to="/product" activeClassName="selected" className="hover:text-black">Product</NavLink>
                     </ul>
-                    
                 </nav>
                 <div className="text-[#3C403D] md:text-[#23A6F0] flex gap-[20px] items-center">
                     <div className="flex gap-2 items-center">
@@ -49,7 +92,7 @@ function Header() {
                             <Gravatar
                                 email={user.email}
                                 size={40}
-                                default="identicon" // You can choose other default images like 'monsterid', 'retro', etc.
+                                default="identicon"
                                 className="rounded-full cursor-pointer"
                                 onClick={toggleLoginMenu}
                                 alt="User Avatar"
@@ -96,7 +139,6 @@ function Header() {
                     <NavLink to="/pricing" activeClassName="selected" className="hover:text-black">Pricing</NavLink>
                     <NavLink to="/contact" activeClassName="selected" className="hover:text-black">Contact</NavLink>
                     <NavLink to="/product" activeClassName="selected" className="hover:text-black">Product</NavLink>
-                    
                 </div>
             )}
             {isLoginOpen && (
@@ -104,16 +146,15 @@ function Header() {
                     <div className="flex flex-col items-center space-y-6 my-12 text-[30px] text-gray-500 md:hidden cursor-pointer">
                         <p className="hover:text-black">{user.name}</p>
                     </div>
-                ) :
+                ) : (
                     <div className="flex flex-col items-center space-y-6 my-12 text-[30px] text-gray-500 md:hidden">
                         <NavLink exact to="/login" activeClassName="selected" className="hover:text-black">Login</NavLink>
                         <NavLink to="/signup" activeClassName="selected" className="hover:text-black">Register</NavLink>
                     </div>
+                )
             )}
         </div>
     )
 }
 
 export default Header;
-
-
