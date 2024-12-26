@@ -29,8 +29,8 @@ function Header() {
     };
 
     const categories = {
-        kadin: ['Bags', 'Belts', 'Cosmetics', 'Bags', 'Hats'],
-        erkek: ['Bags', 'Belts', 'Cosmetics', 'Bags', 'Hats']
+        kadin: ['Gömlek', 'Kazak', 'Pantolon', 'T-shirt', 'Ayakkabı','Elbise','Etek','Ceket'],
+        erkek: ['Gömlek', 'Kazak', 'Pantolon', 'T-shirt', 'Ayakkabı','Ceket']
     };
 
     return (
