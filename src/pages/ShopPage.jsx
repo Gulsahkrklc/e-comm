@@ -1,37 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../redux/actions/categoryActions";
+import { fetchProducts as fetchProductList } from '../redux/actions/productActions';
 import { Link } from "react-router-dom";
 import PageContent from "../layout/PageContent";
+import ProductShop from "../components/ProductShop";
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 12;
 
 const ShopPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("Popularity");
 
   const dispatch = useDispatch();
-  const { list: categories, loading, error } = useSelector((state) => state.categories);
-  const topCategories = categories?.slice()
+  const { list: categories = [], loading: categoriesLoading = false, error: categoriesError = null } =
+    useSelector((state) => state.categories || { list: [], loading: false, error: null });
+
+  const { list: products = [], loading: productsLoading = false, error: productsError = null } =
+    useSelector((state) => state.products || { list: [], loading: false, error: null });
+
+  const topCategories = categories
+    ?.slice()
     .sort((a, b) => b.rating - a.rating)
     .slice(0, 5) || [];
 
   useEffect(() => {
     dispatch(fetchCategories());
+    const params = { limit: 200 }; // Fetching 200 products
+    dispatch(fetchProductList(params));
   }, [dispatch]);
 
-  const totalPages = Math.ceil((categories?.length || 0) / ITEMS_PER_PAGE);
-
-  const paginatedCategories = categories?.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  ) || [];
+  const totalPages = Math.ceil((products?.length || 0) / ITEMS_PER_PAGE);
 
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
   };
 
-  if (loading) {
+  if (categoriesLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
@@ -39,10 +44,10 @@ const ShopPage = () => {
     );
   }
 
-  if (error) {
+  if (categoriesError) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-red-500">Error: {error}</div>
+        <div className="text-red-500">Error: {categoriesError}</div>
       </div>
     );
   }
@@ -90,26 +95,13 @@ const ShopPage = () => {
 
         {/* All Categories */}
         <div className="container mx-auto px-4 py-8">
-          <h3 className="text-2xl font-bold mb-4">All Categories</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-            {paginatedCategories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/shop/${category.gender}/${category.title.toLowerCase()}/${category.id}`}
-                className="border rounded-lg shadow-md hover:shadow-lg transition duration-300"
-              >
-                <img
-                  src={category.img}
-                  alt={category.title}
-                  className="w-full h-48 object-contain rounded-t-lg"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold">{category.title}</h3>
-                  <p className="text-sm text-gray-500">Rating: {category.rating}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {productsLoading ? (
+            <div>Loading products...</div>
+          ) : productsError ? (
+            <div>Error loading products</div>
+          ) : (
+            <ProductShop products={products} />
+          )}
         </div>
 
         {/* Pagination */}
