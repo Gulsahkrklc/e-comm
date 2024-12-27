@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PageContent from "../layout/PageContent";
-import Categories from '../components/Categories';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { fetchProducts, setLimit, setOffset } from '../redux/actions/productActions';
+import { fetchCategories } from '../redux/actions/categoryActions';
 
 function createSlug(name) {
   return name.toLowerCase()
@@ -18,6 +18,14 @@ function ShopPage() {
   const { productList, fetchState, total, limit, offset } = useSelector((state) => state.product);
   const products = productList || [];
   const { gender, categoryName, categoryId } = useParams();
+  
+  // Get categories from the categories reducer
+  const { list: categories, loading: categoriesLoading } = useSelector((state) => state.categories);
+  const topCategories = categories 
+    ? [...categories]
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 5)
+    : [];
 
   const [view, setView] = useState('grid');
   const [sort, setSort] = useState('');
@@ -57,6 +65,10 @@ function ShopPage() {
   useEffect(() => {
     dispatch(fetchProducts({ category: categoryId, sort, filter: appliedFilter, limit, offset }));
   }, [dispatch, categoryId, sort, appliedFilter, limit, offset, gender]);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const totalProducts = total;
   const totalPages = Math.ceil(totalProducts / limit);
@@ -283,6 +295,68 @@ function ShopPage() {
 
   return (
     <PageContent>
+      {/* Page Title and Navigation */}
+      <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold">Shop</h2>
+            <nav className="text-sm text-gray-500">
+              <Link to="/" className="hover:underline">
+                Home
+              </Link>{" "}
+              / <span className="text-gray-700">Shop</span>
+            </nav>
+          </div>
+        </div>
+
+        {/* Top 5 Categories */}
+        <div className="container mx-auto px-4 py-8">
+          <h3 className="text-2xl font-bold mb-6">Top Categories</h3>
+          {categoriesLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+              {[...Array(5)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-200 rounded-lg aspect-w-1 aspect-h-1"></div>
+                </div>
+              ))}
+            </div>
+          ) : topCategories.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+              {topCategories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/shop/${category.gender === "e" ? "erkek" : "kadin"}/${category.title.toLowerCase()}/${category.id}`}
+                  className="relative group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="aspect-w-1 aspect-h-1">
+                    <img
+                      src={category.img}
+                      alt={category.title}
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/30 group-hover:from-black/80 group-hover:to-black/40 transition-all duration-300">
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="text-lg font-semibold mb-1">{category.title}</h3>
+                            <p className="text-sm opacity-90">{category.gender === "e" ? "Erkek" : "Kadın"}</p>
+                          </div>
+                          <div className="flex items-center bg-white/20 px-2 py-1 rounded">
+                            <span className="text-yellow-400 mr-1">★</span>
+                            <span className="text-sm font-medium">{category.rating.toFixed(1)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              No categories found
+            </div>
+          )}
+        </div>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center mb-6 border-b pb-4">
           <div className="flex items-center justify-center w-full mb-4">
