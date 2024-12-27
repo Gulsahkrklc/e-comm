@@ -87,3 +87,13 @@ export const setFilter = (filter) => ({
   type: SET_FILTER,
   payload: filter
 });
+
+export const setLimit = (limit) => ({
+  type: SET_LIMIT,
+  payload: limit
+});
+
+export const setOffset = (offset) => ({
+  type: SET_OFFSET,
+  payload: offset
+});
