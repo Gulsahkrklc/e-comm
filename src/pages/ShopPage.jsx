@@ -56,19 +56,34 @@ function ShopPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch]);
 
+  // Fetch categories on mount
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  // Reset pagination and filter when category changes
   useEffect(() => {
     dispatch(setOffset(0));
     setFilter('');
     setAppliedFilter('');
-  }, [dispatch, categoryId, categoryName, gender, sort]);
+  }, [dispatch, categoryId]);
 
+  // Reset pagination when sort or filter changes
   useEffect(() => {
-    dispatch(fetchProducts({ category: categoryId, sort, filter: appliedFilter, limit, offset }));
-  }, [dispatch, categoryId, sort, appliedFilter, limit, offset, gender]);
+    dispatch(setOffset(0));
+  }, [dispatch, sort, appliedFilter]);
 
+  // Fetch products whenever filter parameters change
   useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
+    const params = {
+      ...(categoryId && { category: categoryId }),
+      ...(sort && { sort }),
+      ...(appliedFilter && { filter: appliedFilter }),
+      limit,
+      offset
+    };
+    dispatch(fetchProducts(params));
+  }, [dispatch, categoryId, sort, appliedFilter, limit, offset]);
 
   const totalProducts = total;
   const totalPages = Math.ceil(totalProducts / limit);

@@ -53,10 +53,10 @@ function App() {
         <Route path="/" exact>
           <HomePage />
         </Route>
-        <Route path="/shop">
+        <Route path="/shop/:gender/:categoryName/:categoryId">
           <ShopPage />
         </Route>
-        <Route path="shop/:gender/:categoryName/:categoryId" element={<ShopPage />}>
+        <Route path="/shop">
           <ShopPage />
         </Route>
         <Route path="/signup">
