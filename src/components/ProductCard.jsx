@@ -1,238 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProductDetail } from "../redux/actions/productActions";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Heart,
-  ShoppingCart,
-} from "lucide-react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-function ProductCard() {
-  const { productId } = useParams();
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const { selectedProduct, isLoading, error } = useSelector(
-    (state) => state.product
-  );
-
-  useEffect(() => {
-    if (productId) {
-      dispatch(fetchProductDetail(productId));
-    }
-  }, [dispatch, productId]);
-
-  const handleAddToCart = () => {
-    if (selectedProduct) {
-      // TODO: Implement addToCart action
-      history.push("/shopping-cart");
-    }
-  };
-
-  const nextSlide = () => {
-    if (selectedProduct?.images) {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === selectedProduct.images.length - 1 ? 0 : prevIndex + 1
-      );
-    }
-  };
-
-  const prevSlide = () => {
-    if (selectedProduct?.images) {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === 0 ? selectedProduct.images.length - 1 : prevIndex - 1
-      );
-    }
-  };
-
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-Primary"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!selectedProduct) {
-    return <div>No product found.</div>;
-  }
-
+const ProductCard = ({id,
+  name,
+  description,
+  price,
+  discountedPrice,
+  image,
+}) => {
   return (
-    <>
-      <div className="flex justify-between items-center bg-white shadow-sm sticky top-0 z-10">
-        <div className="px-8 py-4">
-          <button
-            onClick={() => history.goBack()}
-            className="h7 flex items-center gap-2 text-Primary hover:text-Primary/80 transition-colors"
-          >
-            <ChevronLeft size={20} />
-            Back to
-          </button>
-        </div>
-        <div className="flex gap-2 h7 font-bold justify-center sm:justify-start p-4">
-          <Link to="/" className="text-SecondaryTextColor hover:text-black">
-            Home
-          </Link>
-          <p className="text-SecondaryTextColor">
-            <ChevronRight />
-          </p>
-          <Link to="/shop" className="text-SecondaryTextColor hover:text-black">
-            Shop
-          </Link>
-        </div>
-      </div>
-
-      <div className="bg-lightGray flex flex-col sm:flex-row">
-        <div className="flex flex-col items-start gap-4 max-w-2xl mx-auto p-4">
-          {/* Main Carousel */}
-          <div className="relative w-full">
-            {selectedProduct.images && selectedProduct.images.length > 0 && (
-              <img
-                src={selectedProduct.images[currentIndex]}
-                alt={`Slide ${currentIndex + 1}`}
-                className="w-full h-[500px] object-cover rounded-lg"
-              />
-            )}
-
-            {/* Navigation Arrows */}
-            {selectedProduct.images && selectedProduct.images.length > 1 && (
-              <>
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/50 p-2 rounded-full hover:bg-white/80 transition-colors"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/50 p-2 rounded-full hover:bg-white/80 transition-colors"
-                >
-                  <ChevronRight size={24} />
-                </button>
-              </>
-            )}
+    <section>
+      <div className='flex flex-col flex-wrap'>
+        <Link to={`/productdetails/${id}`} className="group">
+          <img src={image} alt="ProductCard" className="group-hover:opacity-80" />
+        
+        <div className="p-4 text-center font-bold">
+          <h5 className="text-h5 ">{name}</h5>
+          <h6 className="text-h6 text-secondText ">{description}</h6>
+          <div className="flex items-center justify-center space-x-2 mt-2">
+            <span className="text-secondText line-through text-h5">
+              {price}
+            </span>
+            <span className="text-h5 text-primary">
+              {discountedPrice}
+            </span>
           </div>
-
-          {/* Thumbnails */}
-          {selectedProduct.images && selectedProduct.images.length > 1 && (
-            <div className="flex gap-4">
-              {selectedProduct.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-20 h-20 ${
-                    currentIndex === index ? "border-2 border-Primary" : ""
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col gap-4 p-12">
-          {/* Right side - Product Details */}
-          <div className="w-1/2 flex flex-col gap-6">
-            <h5 className="h5 font-bold text-textColor">
-              {selectedProduct.name}
-            </h5>
-
-            {/* Reviews */}
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`text-2xl ${
-                      i < Math.round(selectedProduct.rating)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                  >
-                    ★
-                  </span>
-                ))}
-              </div>
-              <span className="text-gray-600 ml-2">
-                {selectedProduct.reviewsCount} Reviews
-              </span>
-            </div>
-
-            {/* Price */}
-            <div className="flex gap-5 mt-2">
-              <span className="h4 text-textColor line-through">
-                ₺{selectedProduct.price}
-              </span>
-              <span className="h4 text-Secondary font-bold">
-                ₺
-                {`${(
-                  Math.floor((selectedProduct.price / 2) * 100) / 100
-                ).toFixed(2)}`}
-              </span>
-            </div>
-
-            {/* Availability */}
-            <div className="flex items-center gap-2">
-              <span className="text-gray-600">Availability :</span>
-              <span className="text-Primary">
-                {selectedProduct.stock > 0 ? "In Stock" : "Out of Stock"}
-              </span>
-            </div>
-
-            {/* Description */}
-            <p className="text-gray-600 leading-relaxed">
-              {selectedProduct.description}
-            </p>
-
-            <hr className="flex text-gray-600" />
-            {/* Color Options */}
-            <div className="flex gap-4">
-              <button className="w-7 h-7 rounded-full bg-Primary"></button>
-              <button className="w-7 h-7 rounded-full bg-green-500"></button>
-              <button className="w-7 h-7 rounded-full bg-orange-500"></button>
-              <button className="w-7 h-7 rounded-full bg-darkBackground"></button>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-4 mt-4">
+          <div className="flex gap-2 justify-center">
+            {["bg-blue-500", "bg-orange-500", "bg-navy-900"].map((color, index) => (
               <button
-                onClick={handleAddToCart}
-                className="bg-Primary text-white px-8 py-3 rounded-md hover:bg-blue-600 transition-colors"
-              >
-                Add to Cart
-              </button>
-              <button className="p-3 w-12 h-12 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
-                <Heart size={20} />
-              </button>
-              <button className="p-3 w-12 h-12 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
-                <ShoppingCart size={20} />
-              </button>
-              <button className="p-3 w-12 h-12 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
-                <Eye size={20} />
-              </button>
-            </div>
+                key={index}
+                className={`w-4 h-4 rounded-full ${color} border border-gray-200`}
+                aria-label={`Select color ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
+        </Link>
       </div>
-    </>
+    </section>
   );
-}
+};
 
 export default ProductCard;

@@ -13,7 +13,8 @@ const initialState = {
       case 'SET_ADDRESS':
         return { ...state, address: action.payload };
       default:
-        return state;
+        return state;   
+        
     }
   };
   
