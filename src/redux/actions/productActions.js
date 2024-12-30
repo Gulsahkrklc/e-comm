@@ -1,4 +1,5 @@
-import axios from 'axios'; // axios import
+import axios from 'axios';
+import slugify from 'slugify';
 
 export const SET_CATEGORIES = 'SET_CATEGORIES';
 export const SET_PRODUCT_LIST = 'SET_PRODUCT_LIST';
@@ -11,7 +12,6 @@ export const SET_SORT = 'SET_SORT';
 export const SET_SELECTED_PRODUCT = 'SET_SELECTED_PRODUCT';
 export const SET_PRODUCT_LOADING = 'SET_PRODUCT_LOADING';
 
-// Thunk action to fetch products using axios
 export const fetchProducts = (params = {}) => async (dispatch) => {
   dispatch(setFetchState('LOADING'));
 
@@ -25,7 +25,6 @@ export const fetchProducts = (params = {}) => async (dispatch) => {
 
     const url = `https://workintech-fe-ecommerce.onrender.com/products?${queryParams}`;
     const response = await axios.get(url);
-    console.log(response.data); // Log the API response
 
     if (response.status === 200) {
       dispatch(setFetchState('SUCCESS'));
@@ -45,55 +44,26 @@ export const fetchProducts = (params = {}) => async (dispatch) => {
 };
 
 export const fetchProductDetail = (productId) => async (dispatch) => {
-  dispatch({ type: SET_PRODUCT_LOADING, payload: true });
-
+  dispatch(setProductLoading(true));
   try {
     const response = await axios.get(`https://workintech-fe-ecommerce.onrender.com/products/${productId}`);
-    dispatch({ type: SET_SELECTED_PRODUCT, payload: response.data });
+    const product = response.data;
+
+    product.slug = slugify(product.name, { lower: true }); // Slugify işlemi
+    dispatch(setSelectedProduct(product));
   } catch (error) {
     console.error('Error fetching product details:', error);
   } finally {
-    dispatch({ type: SET_PRODUCT_LOADING, payload: false });
+    dispatch(setProductLoading(false));
   }
 };
 
 // Action creators
-export const setCategories = (categories) => ({
-  type: SET_CATEGORIES,
-  payload: categories
-});
-
-export const setProductList = (products) => ({
-  type: SET_PRODUCT_LIST,
-  payload: products
-});
-
-export const setTotal = (total) => ({
-  type: SET_TOTAL,
-  payload: total
-});
-
-export const setFetchState = (state) => ({
-  type: SET_FETCH_STATE,
-  payload: state
-});
-
-export const setSort = (sort) => ({
-  type: SET_SORT,
-  payload: sort
-});
-
-export const setFilter = (filter) => ({
-  type: SET_FILTER,
-  payload: filter
-});
-
-export const setLimit = (limit) => ({
-  type: SET_LIMIT,
-  payload: limit
-});
-
-export const setOffset = (offset) => ({
-  type: SET_OFFSET,
-  payload: offset
-});
+export const setCategories = (categories) => ({ type: SET_CATEGORIES, payload: categories });
+export const setProductList = (products) => ({ type: SET_PRODUCT_LIST, payload: products });
+export const setTotal = (total) => ({ type: SET_TOTAL, payload: total });
+export const setFetchState = (state) => ({ type: SET_FETCH_STATE, payload: state });
+export const setLimit = (limit) => ({ type: SET_LIMIT, payload: limit });
+export const setOffset = (offset) => ({ type: SET_OFFSET, payload: offset });
+export const setProductLoading = (isLoading) => ({ type: SET_PRODUCT_LOADING, payload: isLoading });
+export const setSelectedProduct = (product) => ({ type: SET_SELECTED_PRODUCT, payload: product });

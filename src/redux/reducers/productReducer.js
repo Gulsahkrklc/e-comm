@@ -18,7 +18,7 @@ const initialState = {
   limit: 25,
   offset: 0,
   filter: "",
-  fetchState: "NOT_FETCHED",
+  fetchState: "idle",
   sort: "",
   selectedProduct: null,
   isLoading: false,

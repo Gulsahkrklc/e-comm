@@ -53,6 +53,9 @@ function App() {
         <Route path="/" exact>
           <HomePage />
         </Route>
+        <Route path="/shop/:gender/:categoryName/:categoryId/:productNameSlug/:productId">
+          <ProductDetailPage />
+        </Route>
         <Route path="/shop/:gender/:categoryName/:categoryId">
           <ShopPage />
         </Route>
@@ -64,9 +67,6 @@ function App() {
         </Route>
         <Route path="/login">
           <LoginForm />
-        </Route>
-        <Route path="/product">
-          <ProductDetailPage />
         </Route>
       </Switch>
       <ToastContainer />
