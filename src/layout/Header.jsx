@@ -1,20 +1,31 @@
 import { useState } from "react";
-import { Heart, Menu, Search, ShoppingCart, UserRound } from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart, UserRound, LogOut } from "lucide-react";
 import { NavLink, useHistory, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Gravatar from 'react-gravatar';
+import { clearUser } from '../redux/actions/userActions';
+import { clearAuth } from '../utils/auth';
+import { toast } from 'react-toastify';
 
 function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const user = useSelector((state) => state.client.user);
 
     const mainPageHandle = () => {
         history.push("/");
     }
+
+    const handleLogout = () => {
+        dispatch(clearUser());
+        clearAuth();
+        toast.success('Successfully logged out');
+        history.push('/login');
+    };
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -105,14 +116,23 @@ function Header() {
                 <div className="text-[#3C403D] md:text-[#23A6F0] flex gap-[20px] items-center">
                     <div className="flex gap-2 items-center">
                         {user && user.email ? (
-                            <Gravatar
-                                email={user.email}
-                                size={40}
-                                default="identicon"
-                                className="rounded-full cursor-pointer"
-                                onClick={toggleLoginMenu}
-                                alt="User Avatar"
-                            />
+                            <div className="flex items-center gap-4">
+                                <Gravatar
+                                    email={user.email}
+                                    size={40}
+                                    default="identicon"
+                                    className="rounded-full cursor-pointer"
+                                    onClick={toggleLoginMenu}
+                                    alt="User Avatar"
+                                />
+                                <button 
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 text-red-500 hover:text-red-600 font-semibold"
+                                >
+                                    <LogOut size={20} />
+                                    <span className="hidden md:inline">Logout</span>
+                                </button>
+                            </div>
                         ) : (
                             <button onClick={toggleLoginMenu} className="hover:text-gray-500 font-semibold">
                                 <UserRound />
@@ -155,12 +175,28 @@ function Header() {
                     <NavLink to="/pricing" activeClassName="selected" className="hover:text-black">Pricing</NavLink>
                     <NavLink to="/contact" activeClassName="selected" className="hover:text-black">Contact</NavLink>
                     <NavLink to="/product" activeClassName="selected" className="hover:text-black">Product</NavLink>
+                    {user && (
+                        <button 
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 text-red-500 hover:text-red-600"
+                        >
+                            <LogOut size={24} />
+                            <span>Logout</span>
+                        </button>
+                    )}
                 </div>
             )}
             {isLoginOpen && (
                 user ? (
                     <div className="flex flex-col items-center space-y-6 my-12 text-[30px] text-gray-500 md:hidden cursor-pointer">
                         <p className="hover:text-black">{user.name}</p>
+                        <button 
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 text-red-500 hover:text-red-600 text-[24px]"
+                        >
+                            <LogOut size={24} />
+                            <span>Logout</span>
+                        </button>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center space-y-6 my-12 text-[30px] text-gray-500 md:hidden">

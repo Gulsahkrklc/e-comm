@@ -9,42 +9,22 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "./redux/userActions"; // Düzeltilmiş yol
-import axios from "axios";
+import { setUser } from "./redux/actions/userActions";
 import ProductDetailPage from "./pages/ProductDetailPage";
-
-const axiosInstance = axios.create({
-  baseURL: "https://workintech-fe-ecommerce.onrender.com",
-});
+import { verifyToken } from "./utils/auth";
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axiosInstance.defaults.headers.common["Authorization"] = token;
-
-    const verifyToken = async () => {
-      try {
-        const response = await axiosInstance.get("/verify");
-        const userData = response.data;
-
+    const initializeAuth = async () => {
+      const userData = await verifyToken();
+      if (userData) {
         dispatch(setUser(userData));
-
-        if (userData.token) {
-          localStorage.setItem("token", userData.token);
-          axiosInstance.defaults.headers.common["Authorization"] = userData.token;
-        }
-      } catch (error) {
-        console.error("Token verification failed:", error);
-        localStorage.removeItem("token");
-        delete axiosInstance.defaults.headers.common["Authorization"];
       }
     };
 
-    verifyToken();
+    initializeAuth();
   }, [dispatch]);
 
   return (
