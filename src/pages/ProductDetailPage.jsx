@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import { fetchProductDetail } from '../redux/actions/productActions';
 import { Spinner } from '../components/ui/Spinner';
-import BestsellerProducts from '../components/BestsellerProduct'; // Bestseller Products import
+import BestsellerProducts from '../components/BestsellerProduct';
 import PageContent from '@/layout/PageContent';
 import Description from '@/components/Description';
 import IconList from '@/components/IconCard';
 
 function ProductDetails({ selectedProduct, isLoading, fetchProductDetail }) {
-  const { productId } = useParams();
+  const { gender, categoryName, categoryId, productNameSlug, productId } = useParams();
   const history = useHistory();
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -54,7 +54,13 @@ function ProductDetails({ selectedProduct, isLoading, fetchProductDetail }) {
         <div className="flex items-center space-x-2 mb-6 text-sm">
           <Link to="/" className="text-gray-600 hover:text-gray-900">Home</Link>
           <span className="text-gray-400">/</span>
-          <Link to="/shop" className="text-gray-400">Shop</Link>
+          <Link to="/shop" className="text-gray-600 hover:text-gray-900">Shop</Link>
+          <span className="text-gray-400">/</span>
+          <Link to={`/shop/${gender}`} className="text-gray-600 hover:text-gray-900">{gender}</Link>
+          <span className="text-gray-400">/</span>
+          <Link to={`/shop/${gender}/${categoryName}`} className="text-gray-600 hover:text-gray-900">{categoryName}</Link>
+          <span className="text-gray-400">/</span>
+          <span className="text-gray-400">{selectedProduct.name}</span>
         </div>
 
         {/* Geri Dön Butonu */}

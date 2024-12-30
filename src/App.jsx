@@ -49,27 +49,17 @@ function App() {
 
   return (
     <div>
-      <Switch>
-        <Route path="/" exact>
-          <HomePage />
-        </Route>
-        <Route path="/shop/:gender/:categoryName/:categoryId/:productNameSlug/:productId">
-          <ProductDetailPage />
-        </Route>
-        <Route path="/shop/:gender/:categoryName/:categoryId">
-          <ShopPage />
-        </Route>
-        <Route path="/shop">
-          <ShopPage />
-        </Route>
-        <Route path="/signup">
-          <SignupForm />
-        </Route>
-        <Route path="/login">
-          <LoginForm />
-        </Route>
-      </Switch>
       <ToastContainer />
+      <Switch>
+        <Route exact path="/" component={HomePage} />
+        <Route exact path="/shop" component={ShopPage} />
+        <Route exact path="/signup" component={SignupForm} />
+        <Route exact path="/login" component={LoginForm} />
+        <Route 
+          path="/shop/:gender/:categoryName/:categoryId/:productNameSlug/:productId" 
+          component={ProductDetailPage} 
+        />
+      </Switch>
     </div>
   );
 }
