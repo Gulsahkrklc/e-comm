@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import ShopPage from "./pages/ShopPage";
 import SignupForm from "./pages/SignupForm";
 import LoginForm from "./pages/LoginForm";
+import CartPage from "./pages/CartPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
@@ -35,6 +36,7 @@ function App() {
         <Route exact path="/shop" component={ShopPage} />
         <Route exact path="/signup" component={SignupForm} />
         <Route exact path="/login" component={LoginForm} />
+        <Route exact path="/cart" component={CartPage} />
         <Route 
           path="/shop/:gender/:categoryName/:categoryId/:productNameSlug/:productId" 
           component={ProductDetailPage} 

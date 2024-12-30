@@ -6,6 +6,7 @@ import Gravatar from 'react-gravatar';
 import { clearUser } from '../redux/actions/userActions';
 import { clearAuth } from '../utils/auth';
 import { toast } from 'react-toastify';
+import CartDropdown from '../components/CartDropdown';
 
 function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -114,7 +115,7 @@ function Header() {
                     </ul>
                 </nav>
                 <div className="text-[#3C403D] md:text-[#23A6F0] flex gap-[20px] items-center">
-                    <div className="flex gap-2 items-center">
+                    <div className="flex items-center gap-4">
                         {user && user.email ? (
                             <div className="flex items-center gap-4">
                                 <Gravatar
@@ -153,9 +154,7 @@ function Header() {
                     <button className="hover:text-gray-500">
                         <Search />
                     </button>
-                    <button className="hover:text-gray-500">
-                        <ShoppingCart />
-                    </button>
+                    <CartDropdown />
                     <button className="hidden md:block hover:text-gray-500">
                         <Heart />
                     </button>
