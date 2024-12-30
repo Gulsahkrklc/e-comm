@@ -53,14 +53,18 @@ const shoppingCartReducer = (state = initialState, action) => {
     }
 
     case UPDATE_CART_ITEM: {
-      const { productId, changes } = action.payload;
+      const { productId, updates } = action.payload;
       return {
         ...state,
-        cart: state.cart.map(item =>
-          item.product.id === productId
-            ? { ...item, ...changes }
-            : item
-        )
+        cart: state.cart.map(item => {
+          if (item.product.id === productId) {
+            return {
+              ...item,
+              ...updates
+            };
+          }
+          return item;
+        })
       };
     }
 

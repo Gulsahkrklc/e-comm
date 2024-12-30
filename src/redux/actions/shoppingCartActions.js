@@ -12,9 +12,9 @@ export const addToCart = (product) => ({
   payload: product,
 });
 
-export const updateCartItem = (productId, changes) => ({
+export const updateCartItem = (productId, updates) => ({
   type: UPDATE_CART_ITEM,
-  payload: { productId, changes },
+  payload: { productId, updates },
 });
 
 export const removeFromCart = (productId) => ({

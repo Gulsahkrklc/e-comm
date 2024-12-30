@@ -29,7 +29,12 @@ function ProductDetailPage({ selectedProduct, isLoading, fetchProductDetail }) {
 
   const handleAddToCart = () => {
     if (selectedProduct) {
-      dispatch(addToCart(selectedProduct));
+      // Ürünü sepete eklerken image'i de ekleyelim
+      const productWithImage = {
+        ...selectedProduct,
+        image: selectedProduct.images?.[0] || selectedProduct.image || selectedProduct.thumbnail
+      };
+      dispatch(addToCart(productWithImage));
       toast.success('Ürün sepete eklendi!');
     }
   };
@@ -87,27 +92,22 @@ function ProductDetailPage({ selectedProduct, isLoading, fetchProductDetail }) {
           <div>
             <div className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden relative">
               <img
-                src={selectedProduct.images?.[currentImage] || '/placeholder-image.jpg'}
+                src={selectedProduct.image}
                 alt={selectedProduct.name || 'Ürün Görseli'}
                 className="w-full h-full object-center object-cover"
               />
             </div>
             <div className="flex mt-4 gap-2">
-              {selectedProduct.images?.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleImageChange(index)}
-                  className={`w-16 h-16 border rounded-md overflow-hidden ${
-                    currentImage === index ? 'ring-2 ring-[#23A6F0]' : ''
-                  }`}
-                >
-                  <img
-                    src={image || '/placeholder-image.jpg'}
-                    alt={`Ürün Görseli ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
+              <button
+                onClick={() => handleImageChange(0)}
+                className={`w-16 h-16 border rounded-md overflow-hidden ring-2 ring-[#23A6F0]`}
+              >
+                <img
+                  src={selectedProduct.image}
+                  alt={`Ürün Görseli`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
             </div>
           </div>
 

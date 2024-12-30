@@ -52,9 +52,13 @@ const CartDropdown = () => {
                 {cart.map((item) => (
                   <div key={item.product.id} className="flex gap-4 border-b pb-4">
                     <img
-                      src={item.product.images[0]}
+                      src={item.product.image || item.product.thumbnail}
                       alt={item.product.name}
                       className="w-20 h-20 object-cover rounded"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/placeholder-image.jpg';
+                      }}
                     />
                     <div className="flex-1">
                       <h4 className="font-medium text-sm">{item.product.name}</h4>
