@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useHistory, Link } from 'react-router-dom';
 import { fetchProductDetail } from '../redux/actions/productActions';
 import { Spinner } from '../components/ui/Spinner';
 import BestsellerProducts from '../components/BestsellerProduct'; // Bestseller Products import
@@ -50,6 +50,13 @@ function ProductDetails({ selectedProduct, isLoading, fetchProductDetail }) {
   return (
     <PageContent>
       <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center space-x-2 mb-6 text-sm">
+          <Link to="/" className="text-gray-600 hover:text-gray-900">Home</Link>
+          <span className="text-gray-400">/</span>
+          <Link to="/shop" className="text-gray-400">Shop</Link>
+        </div>
+
         {/* Geri Dön Butonu */}
         <button
           onClick={() => history.goBack()}
